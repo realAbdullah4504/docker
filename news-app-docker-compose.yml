@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  news-app:
+    build:
+      context: ./news-app/react
+    image: abdullah111111/news-app
+    ports:
+      - "10000:80"
+    depends_on:
+      - news-app-backend
+    # volumes:
+    #   - ./react/build:/usr/share/nginx/news-app
+    #   - ./conf:/etc/nginx/conf.d
+    networks:
+      - news-app
+
+  news-app-backend:
+    # build: ./news-app/backend
+    image: abdullah111111/news-app-backend
+    # ports:
+    #   - "11000:80"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+    networks:
+      - news-app
+      - mongo-network
+
+networks:
+  news-app:
+    driver: bridge
+  mongo-network:
+    name: mongo-network

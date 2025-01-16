@@ -1,0 +1,72 @@
+commands for the project container practice
+
+for network connect
+docker network connect node-app nginx
+
+run commands with host volume mount
+
+
+//for nginx
+
+docker run -d -p 80:80 \
+-p 3000:3000 \
+-p 5000:5000 \
+--network node-app \
+--network wordpress_default \
+--network news-app \
+-v //e/vs_projects/dev-ops/docker/docker-apps/nginx/conf:/etc/nginx/conf.d \
+--name nginx \
+abdullah111111/nginx
+
+//for node app
+
+docker run -d -p 8000:80 \
+--network node-app \
+-e MONGO=mongodb://root:example@node-app-mongo:27017/ \
+-v //e/vs_projects/dev-ops/docker/docker-apps/node-app:/app \
+--name node-app abdullah111111/node-app
+
+//for news app
+
+docker run -d -p 10000:80 \
+--network news-app \
+-v //e/vs_projects/dev-ops/docker/docker-apps/news-app/conf:/etc/nginx/conf.d \
+-v //e/vs_projects/dev-ops/docker/docker-apps/news-app/react:/usr/share/nginx/html \
+--name news-app \
+abdullah111111/news-app
+
+docker run -d -p 11000:80 \
+--network news-app \
+-v //e/vs_projects/dev-ops/docker/docker-apps/news-app/backend:/app \
+-e MONGO_URI=mongodb://root:example@news-app-mongo:27017/ \
+--name news-app-backend \
+abdullah111111/news-app-backend
+
+build commands
+docker build -t abdullah111111/nginx .
+docker build -t abdullah111111/node-app .
+docker build -t abdullah111111/python .
+
+//for pushing to docker hub
+docker push 
+
+/etc/nginx/conf.d
+
+docker exec -it nginx nginx -s reload
+
+
+//for compose main
+docker-compose -f docker-compose.yml \
+-f handyman-docker-compose.yml \
+-f mongo-docker-compose.yml \
+-f news-app-docker-compose.yml \
+-f wordpress-docker-compose.yml \
+build
+
+docker-compose -f docker-compose.yml \
+-f handyman-docker-compose.yml \
+-f mongo-docker-compose.yml \
+-f news-app-docker-compose.yml \
+-f wordpress-docker-compose.yml \
+up -d \
+--build

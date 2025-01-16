@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  nginx:
+    build: ./nginx
+    image: abdullah111111/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - news-app
+      - wordpress
+      - node-app
+      - handyman-app
+    networks:
+      - node-app
+      - wordpress_default
+      - news-app
+      - handyman-app
+  
+  node-app:
+    build: ./node-app
+    image: abdullah111111/node-app
+    # ports:
+    #  - "3000:3000"
+    networks:
+      - node-app
+
+networks:
+  node-app:
+    driver: bridge
